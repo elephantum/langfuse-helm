@@ -2,7 +2,17 @@
 Build database url
 */}}
 {{- define "langfuse.databaseUrl" -}}
-{{- printf "%s://%s:%s@%s:%v/%s" .Values.database.type .Values.database.user .Values.database.password .Values.database.host .Values.database.port .Values.database.name }}
+{{ default "postgresql" .type -}}
+://
+{{- default "postgres" .user -}}
+:
+{{- default "password" .password -}}
+@
+{{- default "localhost" .host -}}
+:
+{{- default 5432 .port -}}
+/
+{{- default "langfuse" .name -}}
 {{- end }}
 
 {{/*

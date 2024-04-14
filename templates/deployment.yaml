@@ -55,7 +55,11 @@ spec:
             - name: NODE_ENV
               value: "{{ .Values.nodeEnv }}"
             - name: DATABASE_URL
-              value: "{{ include "langfuse.databaseUrl" . }}"
+              value: "{{ include "langfuse.databaseUrl" .Values.database }}"
+            {{ if .Values.shadowDatabase -}}              
+            - name: SHADOW_DATABASE_URL
+              value: "{{ include "langfuse.databaseUrl" .Values.shadowDatabase }}"
+            {{ end -}}
             - name: NEXTAUTH_URL
               value: {{ if .Values.nextauthUrl}}"{{ .Values.nextauthUrl }}"{{ else }}"https://{{ .Values.host }}"{{ end }}
             - name: NEXTAUTH_SECRET
