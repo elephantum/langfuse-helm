@@ -24,6 +24,7 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      serviceAccountName: {{ include "langfuse.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
@@ -47,46 +48,26 @@ spec:
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           env:
+            - name: PORT
+              value: "3000"
+            - name: HOSTNAME
+              value: "0.0.0.0"
             - name: NODE_ENV
-              valueFrom:
-                configMapKeyRef:
-                  name: langfuse-configmap
-                  key: langfuse-node-env
+              value: "{{ .Values.nodeEnv }}"
             - name: DATABASE_URL
-              valueFrom:
-                configMapKeyRef:
-                  name: langfuse-configmap
-                  key: langfuse-db-url
+              value: "{{ include "langfuse.databaseUrl" . }}"
             - name: NEXTAUTH_URL
-              valueFrom:
-                configMapKeyRef:
-                  name: langfuse-configmap
-                  key: langfuse-nextauth-url
+              value: {{ if .Values.nextauthUrl}}"{{ .Values.nextauthUrl }}"{{ else }}"https://{{ .Values.host }}"{{ end }}
             - name: NEXTAUTH_SECRET
-              valueFrom:
-                configMapKeyRef:
-                  name: langfuse-configmap
-                  key: langfuse-nextauth-secret
-            - name: SALT
-              valueFrom:
-                configMapKeyRef:
-                  name: langfuse-configmap
-                  key: langfuse-salt
-            - name: TELEMETRY_ENABLED
-              valueFrom:
-                configMapKeyRef:
-                  name: langfuse-configmap
-                  key: langfuse-telemetry-enabled
+              value: "{{ .Values.nextauthSecret }}"
             - name: NEXT_PUBLIC_SIGN_UP_DISABLED
-              valueFrom:
-                configMapKeyRef:
-                  name: langfuse-configmap
-                  key: langfuse-next-public-sign-up-disabled
+              value: "{{ .Values.nextPublicSignUpDisabled }}"
+            - name: SALT
+              value: "{{ .Values.salt }}"
+            - name: TELEMETRY_ENABLED
+              value: "{{ .Values.telemetryEnabled }}"
             - name: LANGFUSE_ENABLE_EXPERIMENTAL_FEATURES
-              valueFrom:
-                configMapKeyRef:
-                  name: langfuse-configmap
-                  key: langfuse-enable-experimentalfeatures
+              value: "{{ .Values.enableExperimentalFeatures }}"
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

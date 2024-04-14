@@ -1,4 +1,11 @@
 {{/*
+Build database url
+*/}}
+{{- define "langfuse.databaseUrl" -}}
+{{- printf "%s://%s:%s@%s:%v/%s" .Values.database.type .Values.database.user .Values.database.password .Values.database.host .Values.database.port .Values.database.name }}
+{{- end }}
+
+{{/*
 Expand the name of the chart.
 */}}
 {{- define "langfuse.name" -}}
